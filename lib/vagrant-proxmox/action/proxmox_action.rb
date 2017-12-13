@@ -15,7 +15,12 @@ module VagrantPlugins
 					if config.vm_type == :qemu
 						env[:machine].config.vm.networks.select { |type, _| type == :forwarded_port }.first[1][:host_ip] rescue nil
 					else
-						env[:machine].config.vm.networks.select { |type, _| type == :public_network }.first[1][:ip] rescue nil
+						ip = env[:machine].config.vm.networks.select { |type, _| type == :public_network }.first[1][:ip]
+						if ip == 'dhcp' && config.vm_type == :lxc
+							node, vm_id = env[:machine].id.split '/'
+							ip = exec "lxc-info --name #{vm_id} |grep IP | awk '{print $2}'"
+						end
+						ip rescue nil
 					end
 				end
                 
