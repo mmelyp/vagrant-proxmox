@@ -169,7 +169,7 @@ module VagrantPlugins
 				@vm_id_range = 900..999
 				@vm_name_prefix = 'vagrant_'
 				@vm_memory = 512
-				@vm_disk_size = '20G'
+				@vm_disk_size = 8
 				@vm_storage = 'local'
 				@task_timeout = 60
 				@task_status_check_interval = 2

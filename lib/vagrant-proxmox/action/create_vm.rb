@@ -68,10 +68,11 @@ module VagrantPlugins
 				def create_params_lxc(config, env, vm_id)
 					{vmid: vm_id,
 					 ostemplate: config.openvz_os_template,
-					 hostname: env[:machine].config.vm.hostname || env[:machine].name.to_s,
+					 hostname: env[:machine].config.vm.hostname || "#{env[:machine].name}#{vm_id}",
 					 password: 'vagrant',
 					 storage: config.vm_storage,
 					 memory: config.vm_memory,
+					 rootfs: config.vm_disk_size,
 					 description: "#{config.vm_name_prefix}#{env[:machine].name}"}
 					.tap do |params|
 						params[:net0] = "name=#{get_machine_interface_name(env)},ip=#{get_machine_ip_address(env)},gw=#{get_machine_gw_ip(env)},bridge=#{get_machine_bridge_name(env)}" if get_machine_ip_address(env)
