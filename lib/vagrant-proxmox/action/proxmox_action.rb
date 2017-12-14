@@ -18,7 +18,7 @@ module VagrantPlugins
 						ip = env[:machine].config.vm.networks.select { |type, _| type == :public_network }.first[1][:ip]
 						if ip == 'dhcp' && config.vm_type == :lxc && env[:machine].id
 							node, vm_id = env[:machine].id.split '/'
-							ip = exec "lxc-info -iH --name #{vm_id}"
+							ip = exec "sudo lxc-info -iH --name #{vm_id}"
 						end
 						ip rescue nil
 					end
