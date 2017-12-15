@@ -20,6 +20,8 @@ module VagrantPlugins
 					begin
 						vm_id = env[:machine].id.split("/").last
 						node_ip = env[:proxmox_connection].get_node_ip(node, 'vmbr0')
+						machine = env[:machine]
+						ssh_host_ip = connection(env).get_ssh_host_ip(machine)
 						env[:machine].config.vm.networks.each do |type, options|
 							next if type != :forwarded_port
 							if options[:id] == "ssh"
@@ -28,8 +30,8 @@ module VagrantPlugins
 								options[:auto_correct] = false
 								options[:host_ip] = node_ip
 								options[:host] = sprintf("22%03d", vm_id.to_i).to_i
-								env[:machine].config.ssh.host = node_ip
-								env[:machine].config.ssh.port = sprintf("22%03d", vm_id.to_i).to_s
+								env[:machine].config.ssh.host = ssh_host_ip
+								#env[:machine].config.ssh.port = sprintf("22%03d", vm_id.to_i).to_s
 								break
 							end
 						end

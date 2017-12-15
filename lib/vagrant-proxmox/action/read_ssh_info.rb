@@ -11,7 +11,8 @@ module VagrantPlugins
 				end
 
 				def call env
-					env[:machine_ssh_info] = get_machine_ip_address(env).try do |ip_address|
+					machine = env[:machine]
+					env[:machine_ssh_info] = connection(env).get_ssh_host_ip(machine).try do |ip_address|
 						{host: ip_address, port: env[:machine].config.ssh.guest_port}
 					end
 					env[:machine_ssh_info]

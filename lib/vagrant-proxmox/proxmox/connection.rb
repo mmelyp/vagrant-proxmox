@@ -2,6 +2,7 @@ require 'vagrant-proxmox/proxmox/errors'
 require 'rest-client'
 require 'retryable'
 require 'required_parameters'
+require 'open3'
 
 module VagrantPlugins
 	module Proxmox
@@ -172,6 +173,24 @@ module VagrantPlugins
 					response[:data][:address]
 				rescue ApiError::ServerError
 					:not_created
+				end
+			end
+
+			def get_ssh_host_ip machine
+				config = machine.provider_config
+				if config.vm_type == :qemu
+					machine.config.vm.networks.select { |type, _| type == :forwarded_port }.first[1][:host_ip] rescue nil
+				else
+					ip = machine.config.vm.networks.select { |type, _| type == :public_network }.first[1][:ip]
+					if ip == 'dhcp' && config.vm_type == :lxc && machine.id
+						node, vm_id = machine.id.split '/'
+						#ip = system "sudo lxc-info -iH --name #{vm_id}"
+						cmd = "sudo lxc-info -iH --name #{vm_id}"
+						Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
+							ip = stdout.read
+						end
+					end
+					ip rescue nil
 				end
 			end
 
